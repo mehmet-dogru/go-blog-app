@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"go-blog-app/internal/api/rest/responses"
 	"go-blog-app/internal/domain"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -115,9 +117,7 @@ func (a Auth) Authorize(ctx *fiber.Ctx) error {
 	if len(authHeaders) > 0 {
 		authHeader = authHeaders[0]
 	} else {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"message": "authorization header missing",
-		})
+		return responses.NewErrorResponse(ctx, http.StatusUnauthorized, "authorization header missing")
 	}
 
 	user, err := a.VerifyToken(authHeader)
@@ -126,10 +126,7 @@ func (a Auth) Authorize(ctx *fiber.Ctx) error {
 		ctx.Locals("user", user)
 		return ctx.Next()
 	} else {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"message": "authorization failed",
-			"reason":  err,
-		})
+		return responses.NewErrorResponse(ctx, http.StatusUnauthorized, "authorization failed")
 	}
 }
 

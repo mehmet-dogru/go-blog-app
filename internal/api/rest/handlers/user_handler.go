@@ -24,12 +24,14 @@ func SetupUserRoutes(rh *rest.RestHandler) {
 		svc: svc,
 	}
 
-	pubRoutes := app.Group("/users")
-
 	//Public Endpoints
+	pubRoutes := app.Group("/users")
 	pubRoutes.Post("/register", handler.Register)
 	pubRoutes.Post("/login", handler.Login)
 
+	//Private Routes
+	pvtRoutes := pubRoutes.Group("/", rh.Auth.Authorize)
+	pvtRoutes.Get("/profile", handler.GetProfile)
 }
 
 func (h *UserHandler) Register(ctx *fiber.Ctx) error {
@@ -62,4 +64,15 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	}
 
 	return responses.NewSuccessResponse(ctx, http.StatusOK, token)
+}
+
+func (h *UserHandler) GetProfile(ctx *fiber.Ctx) error {
+	userInfo := h.svc.Auth.GetCurrentUser(ctx)
+
+	user, err := h.svc.GetProfile(userInfo.ID)
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "user not found")
+	}
+
+	return responses.NewSuccessResponse(ctx, http.StatusOK, user)
 }
