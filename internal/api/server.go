@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gofiber/fiber/v2"
 	"go-blog-app/config"
+	"go-blog-app/infra/redis"
 	"go-blog-app/internal/api/rest"
 	"go-blog-app/internal/api/rest/handlers"
 	"go-blog-app/internal/domain"
@@ -24,12 +25,15 @@ func StartServer(config config.AppConfig) {
 
 	db.AutoMigrate(&domain.User{})
 
+	rdsDB := redis.ConnectRedis(config)
+
 	auth := helper.SetupAuth(config.AppSecret)
 
 	rh := &rest.RestHandler{
-		App:  app,
-		DB:   db,
-		Auth: auth,
+		App:   app,
+		DB:    db,
+		Auth:  auth,
+		Redis: rdsDB,
 	}
 
 	setupRoutes(rh)

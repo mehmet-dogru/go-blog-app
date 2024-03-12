@@ -18,7 +18,7 @@ func SetupUserRoutes(rh *rest.RestHandler) {
 	app := rh.App
 
 	repo := repository.NewUserRepository(rh.DB)
-	svc := service.NewUserService(repo, rh.Auth)
+	svc := service.NewUserService(repo, rh.Auth, *rh.Redis)
 
 	handler := UserHandler{
 		svc: svc,

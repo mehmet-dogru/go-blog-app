@@ -7,9 +7,11 @@ import (
 )
 
 type AppConfig struct {
-	ServerPort string
-	DSN        string
-	AppSecret  string
+	ServerPort    string
+	DSN           string
+	AppSecret     string
+	RedisAddr     string
+	RedisPassword string
 }
 
 func SetupEnv() (cfg AppConfig, err error) {
@@ -30,9 +32,21 @@ func SetupEnv() (cfg AppConfig, err error) {
 		return AppConfig{}, errors.New("env variables not loaded")
 	}
 
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if len(redisAddr) < 1 {
+		return AppConfig{}, errors.New("redis address env variables not loaded")
+	}
+
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	if len(redisPassword) < 0 {
+		return AppConfig{}, errors.New("redis pass env variables not loaded")
+	}
+
 	return AppConfig{
-		ServerPort: httpPort,
-		DSN:        DSN,
-		AppSecret:  appSecret,
+		ServerPort:    httpPort,
+		DSN:           DSN,
+		AppSecret:     appSecret,
+		RedisAddr:     redisAddr,
+		RedisPassword: redisPassword,
 	}, nil
 }
