@@ -37,3 +37,9 @@ func (s ArticleService) GetArticles() ([]domain.Article, error) {
 	}
 	return articles, err
 }
+
+func (s ArticleService) GetArticle(id uint) (*domain.Article, error) {
+	article, err := s.Repo.FindArticleById(id)
+
+	return &article, err
+}

@@ -8,6 +8,7 @@ import (
 	"go-blog-app/internal/repository"
 	"go-blog-app/internal/service"
 	"net/http"
+	"strconv"
 )
 
 type ArticleHandler struct {
@@ -27,6 +28,7 @@ func SetupArticleRoutes(rh *rest.RestHandler) {
 	//Public Endpoints
 	pubRoutes := app.Group("/articles")
 	pubRoutes.Get("/", handler.GetArticles)
+	pubRoutes.Get("/:id", handler.GetArticle)
 
 	//Private Routes
 	pvtRoutes := pubRoutes.Group("/", rh.Auth.Authorize)
@@ -57,4 +59,18 @@ func (h *ArticleHandler) GetArticles(ctx *fiber.Ctx) error {
 	}
 
 	return responses.NewSuccessResponse(ctx, http.StatusOK, articles)
+}
+
+func (h *ArticleHandler) GetArticle(ctx *fiber.Ctx) error {
+	articleId := ctx.Params("id")
+	id, err := strconv.Atoi(articleId)
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "invalid article ID")
+	}
+	article, err := h.svc.GetArticle(uint(id))
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return responses.NewSuccessResponse(ctx, http.StatusOK, article)
 }
