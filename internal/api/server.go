@@ -24,6 +24,7 @@ func StartServer(config config.AppConfig) {
 	}
 
 	db.AutoMigrate(&domain.User{})
+	db.AutoMigrate(&domain.Article{})
 
 	rdsDB := redis.ConnectRedis(config)
 
@@ -43,4 +44,5 @@ func StartServer(config config.AppConfig) {
 
 func setupRoutes(rh *rest.RestHandler) {
 	handlers.SetupUserRoutes(rh)
+	handlers.SetupArticleRoutes(rh)
 }
