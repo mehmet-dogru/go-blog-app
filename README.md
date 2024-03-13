@@ -28,8 +28,12 @@ This command starts the PostgreSQL database and the Golang REST API server.
 
 You can access the API using an API client (e.g., Postman or cURL). The fundamental endpoints of the API are:
 
-- **POST /users/register** : Creates a new user registration.
-- **POST /users/login**    : Logs in with an existing user and creates a session (JWT token).
+- **POST /users/register**   : Creates a new user registration.
+- **POST /users/login**      : Logs in with an existing user and creates a session (JWT token).
+- **GET  /users/profile**    : Provides access to the user's profile.
+- **POST /articles/create**  : Creates a new article.
+- **GET  /articles**         : Retrieves all articles.
+- **GET  /articles/:id**     : Retrieves details of a specific article. (Replace ":id" with the article ID.)
 
 ## Architecture
 
