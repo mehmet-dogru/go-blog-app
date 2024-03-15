@@ -58,3 +58,18 @@ func (s ArticleService) UpdateArticle(input dto.UpdateArticleDto, id uint, authI
 
 	return &updatedArticle, err
 }
+
+func (s ArticleService) DeleteArticle(id uint, authId uint) error {
+	article, err := s.Repo.FindArticleById(id)
+	if err != nil {
+		return err
+	}
+
+	if article.AuthorID != authId {
+		return errors.New("you are not authorized to delete this article")
+	}
+
+	error := s.Repo.RemoveArticle(id)
+
+	return error
+}

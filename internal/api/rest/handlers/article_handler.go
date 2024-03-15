@@ -34,6 +34,7 @@ func SetupArticleRoutes(rh *rest.RestHandler) {
 	pvtRoutes := pubRoutes.Group("/", rh.Auth.Authorize)
 	pvtRoutes.Post("/create", handler.CreatePost)
 	pvtRoutes.Put("/update/:id", handler.UpdateArticle)
+	pvtRoutes.Delete("/delete/:id", handler.DeleteArticle)
 }
 
 func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
@@ -96,4 +97,19 @@ func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 	}
 
 	return responses.NewSuccessResponse(ctx, http.StatusOK, updatedArticle)
+}
+
+func (h ArticleHandler) DeleteArticle(ctx *fiber.Ctx) error {
+	articleId := ctx.Params("id")
+	id, err := strconv.Atoi(articleId)
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "invalid article ID")
+	}
+
+	user := h.svc.Auth.GetCurrentUser(ctx)
+	error := h.svc.DeleteArticle(uint(id), user.ID)
+	if error != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, error.Error())
+	}
+	return responses.NewSuccessResponse(ctx, http.StatusOK, "article has been deleted")
 }

@@ -13,6 +13,7 @@ type ArticleRepository interface {
 	FindArticleById(id uint) (domain.Article, error)
 	UpdateArticle(id uint, u domain.Article) (domain.Article, error)
 	GetArticles() ([]domain.Article, error)
+	RemoveArticle(id uint) error
 }
 
 type articleRepository struct {
@@ -68,4 +69,16 @@ func (r articleRepository) GetArticles() ([]domain.Article, error) {
 		return nil, errors.New("failed to get articles")
 	}
 	return articles, nil
+}
+
+func (r articleRepository) RemoveArticle(id uint) error {
+	var article domain.Article
+	err := r.db.Where("id = ?", id).Delete(&article).Error
+
+	if err != nil {
+		log.Printf("error on delete %v", err)
+		return errors.New("failed delete to article")
+	}
+
+	return err
 }
