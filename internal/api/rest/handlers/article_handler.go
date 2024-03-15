@@ -33,6 +33,7 @@ func SetupArticleRoutes(rh *rest.RestHandler) {
 	//Private Routes
 	pvtRoutes := pubRoutes.Group("/", rh.Auth.Authorize)
 	pvtRoutes.Post("/create", handler.CreatePost)
+	pvtRoutes.Put("/update/:id", handler.UpdateArticle)
 }
 
 func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
@@ -73,4 +74,25 @@ func (h *ArticleHandler) GetArticle(ctx *fiber.Ctx) error {
 	}
 
 	return responses.NewSuccessResponse(ctx, http.StatusOK, article)
+}
+
+func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
+	articleId := ctx.Params("id")
+	id, err := strconv.Atoi(articleId)
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "invalid article ID")
+	}
+
+	article := dto.UpdateArticleDto{}
+	err = ctx.BodyParser(&article)
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "invalid article inputs")
+	}
+
+	updatedArticle, err := h.svc.UpdateArticle(article, uint(id))
+	if err != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return responses.NewSuccessResponse(ctx, http.StatusOK, updatedArticle)
 }
