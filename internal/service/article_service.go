@@ -44,7 +44,16 @@ func (s ArticleService) GetArticle(id uint) (*domain.Article, error) {
 	return &article, err
 }
 
-func (s ArticleService) UpdateArticle(input dto.UpdateArticleDto, id uint) (*domain.Article, error) {
+func (s ArticleService) UpdateArticle(input dto.UpdateArticleDto, id uint, authId uint) (*domain.Article, error) {
+	article, err := s.Repo.FindArticleById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if article.AuthorID != authId {
+		return nil, errors.New("you are not authorized to update this article")
+	}
+
 	updatedArticle, err := s.Repo.UpdateArticle(id, domain.Article{Title: input.Title, Content: input.Content})
 
 	return &updatedArticle, err

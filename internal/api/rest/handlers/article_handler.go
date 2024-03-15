@@ -89,7 +89,8 @@ func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "invalid article inputs")
 	}
 
-	updatedArticle, err := h.svc.UpdateArticle(article, uint(id))
+	user := h.svc.Auth.GetCurrentUser(ctx)
+	updatedArticle, err := h.svc.UpdateArticle(article, uint(id), user.ID)
 	if err != nil {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
 	}
