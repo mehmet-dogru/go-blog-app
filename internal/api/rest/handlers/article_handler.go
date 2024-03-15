@@ -21,7 +21,7 @@ func SetupArticleRoutes(rh *rest.RestHandler) {
 	repo := repository.NewArticleRepository(rh.DB)
 	svc := service.NewArticleService(repo, rh.Auth)
 
-	handler := ArticleHandler{
+	handler := &ArticleHandler{
 		svc: svc,
 	}
 
@@ -99,7 +99,7 @@ func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, updatedArticle)
 }
 
-func (h ArticleHandler) DeleteArticle(ctx *fiber.Ctx) error {
+func (h *ArticleHandler) DeleteArticle(ctx *fiber.Ctx) error {
 	articleId := ctx.Params("id")
 	id, err := strconv.Atoi(articleId)
 	if err != nil {
