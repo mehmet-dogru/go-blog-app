@@ -23,8 +23,10 @@ func StartServer(config config.AppConfig) {
 		log.Println("database connection success ✅")
 	}
 
-	db.AutoMigrate(&domain.User{})
-	db.AutoMigrate(&domain.Article{})
+	err = db.AutoMigrate(&domain.User{}, &domain.Article{})
+	if err != nil {
+		return
+	}
 
 	rdsDB := redis.ConnectRedis(config)
 
