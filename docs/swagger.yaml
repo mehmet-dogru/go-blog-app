@@ -1,0 +1,303 @@
+basePath: /
+definitions:
+  domain.Article:
+    properties:
+      author_id:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.CreateArticleDto:
+    properties:
+      content:
+        maxLength: 1000
+        minLength: 1
+        type: string
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
+  dto.ProfileInfo:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+  dto.UpdateArticleDto:
+    properties:
+      content:
+        maxLength: 1000
+        minLength: 1
+        type: string
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
+  dto.UserLogin:
+    properties:
+      email:
+        maxLength: 255
+        minLength: 1
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.UserSignup:
+    properties:
+      email:
+        maxLength: 255
+        minLength: 1
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    type: object
+info:
+  contact:
+    email: mdogru685@gmail.com
+  description: This is a blog api
+  title: Go Blog API
+  version: "1.0"
+paths:
+  /articles/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all articles available
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Article'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Retrieve all articles
+      tags:
+      - Articles
+  /articles/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific article by its ID
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Article'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Retrieve article by ID
+      tags:
+      - Articles
+  /articles/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new article with provided details
+      parameters:
+      - description: Article creation details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateArticleDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Article'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new article
+      tags:
+      - Articles
+  /articles/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing article by its ID
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: article has been deleted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete an existing article
+      tags:
+      - Articles
+  /articles/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing article with provided details
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Article update details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateArticleDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Article'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update an existing article
+      tags:
+      - Articles
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user with provided credentials
+      parameters:
+      - description: User login details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Log in user
+      tags:
+      - Users
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves profile information of the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProfileInfo'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user with provided details
+      parameters:
+      - description: User signup details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Register a new user
+      tags:
+      - Users
+swagger: "2.0"

@@ -38,6 +38,17 @@ func SetupArticleRoutes(rh *rest.RestHandler) {
 	pvtRoutes.Delete("/delete/:id", handler.DeleteArticle)
 }
 
+// CreatePost creates a new article.
+// @Summary Create a new article
+// @Description Creates a new article with provided details
+// @Tags Articles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param input body dto.CreateArticleDto true "Article creation details"
+// @Success 200 {object} domain.Article "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Router /articles/create [post]
 func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
 	user := h.svc.Auth.GetCurrentUser(ctx)
 
@@ -60,6 +71,15 @@ func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, arc)
 }
 
+// GetArticles retrieves all articles.
+// @Summary Retrieve all articles
+// @Description Retrieves all articles available
+// @Tags Articles
+// @Accept json
+// @Produce json
+// @Success 200 {array} domain.Article "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Router /articles/ [get]
 func (h *ArticleHandler) GetArticles(ctx *fiber.Ctx) error {
 	articles, err := h.svc.GetArticles()
 	if err != nil {
@@ -69,6 +89,16 @@ func (h *ArticleHandler) GetArticles(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, articles)
 }
 
+// GetArticle retrieves a specific article by ID.
+// @Summary Retrieve article by ID
+// @Description Retrieves a specific article by its ID
+// @Tags Articles
+// @Accept json
+// @Produce json
+// @Param id path int true "Article ID"
+// @Success 200 {object} domain.Article "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Router /articles/{id} [get]
 func (h *ArticleHandler) GetArticle(ctx *fiber.Ctx) error {
 	articleId := ctx.Params("id")
 	id, err := strconv.Atoi(articleId)
@@ -83,6 +113,18 @@ func (h *ArticleHandler) GetArticle(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, article)
 }
 
+// UpdateArticle updates an existing article.
+// @Summary Update an existing article
+// @Description Updates an existing article with provided details
+// @Tags Articles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Article ID"
+// @Param input body dto.UpdateArticleDto true "Article update details"
+// @Success 200 {object} domain.Article "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Router /articles/update/{id} [put]// UpdateArticle updates an existing article.
 func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 	articleId := ctx.Params("id")
 	id, err := strconv.Atoi(articleId)
@@ -110,6 +152,17 @@ func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, updatedArticle)
 }
 
+// DeleteArticle deletes an existing article.
+// @Summary Delete an existing article
+// @Description Deletes an existing article by its ID
+// @Tags Articles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Article ID"
+// @Success 200 {string} string "article has been deleted"
+// @Failure 400 {string} string "Bad Request"
+// @Router /articles/delete/{id} [delete]
 func (h *ArticleHandler) DeleteArticle(ctx *fiber.Ctx) error {
 	articleId := ctx.Params("id")
 	id, err := strconv.Atoi(articleId)

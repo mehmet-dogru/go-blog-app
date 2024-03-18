@@ -6,6 +6,11 @@ import (
 	"log"
 )
 
+// @title Go Blog API
+// @version 1.0
+// @description This is a blog api
+// @contact.email mdogru685@gmail.com
+// @BasePath /
 func main() {
 	cfg, err := config.SetupEnv()
 	if err != nil {

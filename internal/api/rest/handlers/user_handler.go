@@ -35,6 +35,16 @@ func SetupUserRoutes(rh *rest.RestHandler) {
 	pvtRoutes.Get("/profile", handler.GetProfile)
 }
 
+// Register registers a new user.
+// @Summary Register a new user
+// @Description Registers a new user with provided details
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param input body dto.UserSignup true "User signup details"
+// @Success 200 {string} string "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Router /users/register [post]
 func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 	user := dto.UserSignup{}
 
@@ -56,6 +66,17 @@ func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, token)
 }
 
+// Login logs in a user.
+// @Summary Log in user
+// @Description Logs in a user with provided credentials
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param input body dto.UserLogin true "User login details"
+// @Success 200 {string} string "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Router /users/login [post]
 func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	loginInput := dto.UserLogin{}
 
@@ -77,6 +98,16 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	return responses.NewSuccessResponse(ctx, http.StatusOK, token)
 }
 
+// GetProfile retrieves user profile information.
+// @Summary Get user profile
+// @Description Retrieves profile information of the logged-in user
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} dto.ProfileInfo "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Router /users/profile [get]
 func (h *UserHandler) GetProfile(ctx *fiber.Ctx) error {
 	userInfo := h.svc.Auth.GetCurrentUser(ctx)
 
