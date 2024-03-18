@@ -7,6 +7,7 @@ import (
 	"go-blog-app/internal/dto"
 	"go-blog-app/internal/repository"
 	"go-blog-app/internal/service"
+	"go-blog-app/pkg/utils/validator"
 	"net/http"
 )
 
@@ -42,6 +43,11 @@ func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "please provide valid inputs")
 	}
 
+	errValidate := validator.ValidateStruct(ctx.Context(), &user)
+	if errValidate != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, errValidate.Error())
+	}
+
 	token, err := h.svc.Signup(user)
 	if err != nil {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "error on signup")
@@ -56,6 +62,11 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	err := ctx.BodyParser(&loginInput)
 	if err != nil {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "please provide valid inputs")
+	}
+
+	errValidate := validator.ValidateStruct(ctx.Context(), &loginInput)
+	if errValidate != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, errValidate.Error())
 	}
 
 	token, err := h.svc.Login(loginInput.Email, loginInput.Password)

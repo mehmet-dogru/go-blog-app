@@ -7,6 +7,7 @@ import (
 	"go-blog-app/internal/dto"
 	"go-blog-app/internal/repository"
 	"go-blog-app/internal/service"
+	"go-blog-app/pkg/utils/validator"
 	"net/http"
 	"strconv"
 )
@@ -44,6 +45,11 @@ func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
 	err := ctx.BodyParser(&article)
 	if err != nil {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "please provide valid inputs")
+	}
+
+	errValidate := validator.ValidateStruct(ctx.Context(), &article)
+	if errValidate != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, errValidate.Error())
 	}
 
 	arc, err := h.svc.CreateArticle(article, user.ID)
@@ -90,6 +96,11 @@ func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "invalid article inputs")
 	}
 
+	errValidate := validator.ValidateStruct(ctx.Context(), &article)
+	if errValidate != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, errValidate.Error())
+	}
+
 	user := h.svc.Auth.GetCurrentUser(ctx)
 	updatedArticle, err := h.svc.UpdateArticle(article, uint(id), user.ID)
 	if err != nil {
@@ -107,9 +118,9 @@ func (h *ArticleHandler) DeleteArticle(ctx *fiber.Ctx) error {
 	}
 
 	user := h.svc.Auth.GetCurrentUser(ctx)
-	error := h.svc.DeleteArticle(uint(id), user.ID)
-	if error != nil {
-		return responses.NewErrorResponse(ctx, http.StatusBadRequest, error.Error())
+	errResp := h.svc.DeleteArticle(uint(id), user.ID)
+	if errResp != nil {
+		return responses.NewErrorResponse(ctx, http.StatusBadRequest, errResp.Error())
 	}
 	return responses.NewSuccessResponse(ctx, http.StatusOK, "article has been deleted")
 }
