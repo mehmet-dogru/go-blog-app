@@ -2,6 +2,8 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
 	"go-blog-app/config"
 	_ "go-blog-app/docs"
@@ -41,6 +43,8 @@ func StartServer(config config.AppConfig) {
 		Redis: rdsDB,
 	}
 
+	app.Use(cors.New())
+	app.Use(logger.New())
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	setupRoutes(rh)
 
