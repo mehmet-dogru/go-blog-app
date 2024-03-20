@@ -6,24 +6,28 @@ import (
 	"errors"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"go-blog-app/config"
 	"go-blog-app/internal/domain"
 	"go-blog-app/internal/dto"
 	"go-blog-app/internal/helper"
 	"go-blog-app/internal/repository"
+	"go-blog-app/pkg/notification"
 	"time"
 )
 
 type UserService struct {
-	Repo  repository.UserRepository
-	Auth  helper.Auth
-	Redis redis.Client
+	Repo   repository.UserRepository
+	Auth   helper.Auth
+	Redis  redis.Client
+	Config config.AppConfig
 }
 
-func NewUserService(repo repository.UserRepository, auth helper.Auth, redis redis.Client) UserService {
+func NewUserService(repo repository.UserRepository, auth helper.Auth, redis redis.Client, config config.AppConfig) UserService {
 	return UserService{
-		Repo:  repo,
-		Auth:  auth,
-		Redis: redis,
+		Repo:   repo,
+		Auth:   auth,
+		Redis:  redis,
+		Config: config,
 	}
 }
 
@@ -40,6 +44,12 @@ func (s UserService) Signup(input dto.UserSignup) (string, error) {
 		Email:     input.Email,
 		Password:  hPassword,
 	})
+
+	notificationClient := notification.NewNotificationClient(s.Config)
+	err = notificationClient.SendEmail(user.Email, "Register Successfully", "Welcome to Blog App")
+	if err != nil {
+		return "", errors.New("error on sending email")
+	}
 
 	return s.Auth.GenerateToken(user.ID, user.Email, user.Role)
 }
