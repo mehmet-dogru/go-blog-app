@@ -7,25 +7,19 @@ import (
 	"github.com/gofiber/swagger"
 	"go-blog-app/config"
 	_ "go-blog-app/docs"
+	"go-blog-app/infra/postgresql"
 	"go-blog-app/infra/redis"
 	"go-blog-app/internal/api/rest"
 	"go-blog-app/internal/api/rest/handlers"
 	"go-blog-app/internal/domain"
 	"go-blog-app/internal/helper"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 )
 
 func StartServer(config config.AppConfig) {
 	app := fiber.New()
 
-	db, err := gorm.Open(postgres.Open(config.DSN), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("database connection error %v\n", err)
-	} else {
-		log.Println("database connection success ✅")
-	}
+	db, err := postgresql.ConnectPostgres(config)
 
 	err = db.AutoMigrate(&domain.User{}, &domain.Article{})
 	if err != nil {
