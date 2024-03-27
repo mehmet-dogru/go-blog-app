@@ -46,7 +46,7 @@ func SetupArticleRoutes(rh *rest.RestHandler) {
 // @Produce json
 // @Security BearerAuth
 // @Param input body dto.CreateArticleDto true "Article creation details"
-// @Success 200 {object} domain.Article "OK"
+// @Success 201 {object} string "CREATED"
 // @Failure 400 {string} string "Bad Request"
 // @Router /articles/create [post]
 func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
@@ -68,7 +68,7 @@ func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "error on create article")
 	}
 
-	return responses.NewSuccessResponse(ctx, http.StatusOK, "article created")
+	return responses.NewSuccessResponse(ctx, http.StatusCreated, "article created")
 }
 
 // GetArticles retrieves all articles.
@@ -122,7 +122,7 @@ func (h *ArticleHandler) GetArticle(ctx *fiber.Ctx) error {
 // @Security BearerAuth
 // @Param id path int true "Article ID"
 // @Param input body dto.UpdateArticleDto true "Article update details"
-// @Success 200 {object} "OK"
+// @Success 200 {object} string "OK"
 // @Failure 400 {string} string "Bad Request"
 // @Router /articles/update/{id} [put]// UpdateArticle updates an existing article.
 func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
