@@ -79,10 +79,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "CREATED",
                         "schema": {
-                            "$ref": "#/definitions/domain.Article"
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -177,7 +177,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Article"
+                            "type": "string"
                         }
                     },
                     "400": {

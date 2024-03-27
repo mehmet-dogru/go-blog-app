@@ -150,10 +150,10 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: CREATED
           schema:
-            $ref: '#/definitions/domain.Article'
+            type: string
         "400":
           description: Bad Request
           schema:
@@ -213,7 +213,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Article'
+            type: string
         "400":
           description: Bad Request
           schema:
