@@ -9,11 +9,11 @@ import (
 )
 
 type ArticleRepository interface {
-	CreateArticle(article domain.Article) (domain.Article, error)
+	CreateArticle(article domain.Article) error
 	FindArticleById(id uint) (domain.Article, error)
-	UpdateArticle(id uint, u domain.Article) (domain.Article, error)
+	UpdateArticle(id uint, authorId uint, u domain.Article) error
 	GetArticles() ([]domain.Article, error)
-	RemoveArticle(id uint) error
+	RemoveArticle(id uint, authorId uint) error
 }
 
 type articleRepository struct {
@@ -26,13 +26,13 @@ func NewArticleRepository(db *gorm.DB) ArticleRepository {
 	}
 }
 
-func (r articleRepository) CreateArticle(article domain.Article) (domain.Article, error) {
-	err := r.db.Create(&article).Error
-	if err != nil {
-		log.Printf("create article error %v", err)
-		return domain.Article{}, errors.New("failed to create article")
+func (r articleRepository) CreateArticle(article domain.Article) error {
+	result := r.db.Create(&article)
+	if result.Error != nil {
+		log.Printf("create article error %v", result.Error)
+		return errors.New("failed to create article")
 	}
-	return article, nil
+	return nil
 }
 
 func (r articleRepository) FindArticleById(id uint) (domain.Article, error) {
@@ -48,17 +48,21 @@ func (r articleRepository) FindArticleById(id uint) (domain.Article, error) {
 	return article, nil
 }
 
-func (r articleRepository) UpdateArticle(id uint, a domain.Article) (domain.Article, error) {
+func (r articleRepository) UpdateArticle(id uint, authorId uint, a domain.Article) error {
 	var article domain.Article
 
-	err := r.db.Model(&article).Clauses(clause.Returning{}).Where("id=?", id).Updates(a).Error
+	result := r.db.Model(&article).Clauses(clause.Returning{}).Where("id=?", id).Where("author_id=?", authorId).Updates(a)
 
-	if err != nil {
-		log.Printf("error on update %v", err)
-		return domain.Article{}, errors.New("failed update article")
+	if result.Error != nil {
+		log.Printf("error on update %v", result.Error)
+		return errors.New("failed update article")
 	}
 
-	return article, nil
+	if result.RowsAffected == 0 {
+		return errors.New("article not found or you are not authorized")
+	}
+
+	return nil
 }
 
 func (r articleRepository) GetArticles() ([]domain.Article, error) {
@@ -71,14 +75,18 @@ func (r articleRepository) GetArticles() ([]domain.Article, error) {
 	return articles, nil
 }
 
-func (r articleRepository) RemoveArticle(id uint) error {
+func (r articleRepository) RemoveArticle(id uint, authorId uint) error {
 	var article domain.Article
-	err := r.db.Where("id = ?", id).Delete(&article).Error
+	result := r.db.Where("id = ?", id).Where("author_id=?", authorId).Delete(&article)
 
-	if err != nil {
-		log.Printf("error on delete %v", err)
+	if result.Error != nil {
+		log.Printf("error on delete %v", result.Error)
 		return errors.New("failed delete to article")
 	}
 
-	return err
+	if result.RowsAffected == 0 {
+		return errors.New("article not found or you are not authorized")
+	}
+
+	return result.Error
 }

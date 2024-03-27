@@ -63,12 +63,12 @@ func (h *ArticleHandler) CreatePost(ctx *fiber.Ctx) error {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, errValidate.Error())
 	}
 
-	arc, err := h.svc.CreateArticle(article, user.ID)
+	err = h.svc.CreateArticle(article, user.ID)
 	if err != nil {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, "error on create article")
 	}
 
-	return responses.NewSuccessResponse(ctx, http.StatusOK, arc)
+	return responses.NewSuccessResponse(ctx, http.StatusOK, "article created")
 }
 
 // GetArticles retrieves all articles.
@@ -122,7 +122,7 @@ func (h *ArticleHandler) GetArticle(ctx *fiber.Ctx) error {
 // @Security BearerAuth
 // @Param id path int true "Article ID"
 // @Param input body dto.UpdateArticleDto true "Article update details"
-// @Success 200 {object} domain.Article "OK"
+// @Success 200 {object} "OK"
 // @Failure 400 {string} string "Bad Request"
 // @Router /articles/update/{id} [put]// UpdateArticle updates an existing article.
 func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
@@ -144,12 +144,12 @@ func (h *ArticleHandler) UpdateArticle(ctx *fiber.Ctx) error {
 	}
 
 	user := h.svc.Auth.GetCurrentUser(ctx)
-	updatedArticle, err := h.svc.UpdateArticle(article, uint(id), user.ID)
+	err = h.svc.UpdateArticle(article, uint(id), user.ID)
 	if err != nil {
 		return responses.NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	return responses.NewSuccessResponse(ctx, http.StatusOK, updatedArticle)
+	return responses.NewSuccessResponse(ctx, http.StatusOK, "article updated")
 }
 
 // DeleteArticle deletes an existing article.
